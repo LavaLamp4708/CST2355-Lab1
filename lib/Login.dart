@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void attemptLogin(String username, String password) {
     setState(() {
-      _imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
+      _imagePath = password == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
     });
   }
 
