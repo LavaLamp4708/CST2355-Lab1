@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _username;
   late TextEditingController _password;
+  bool loginIsSet = true;
   var _imagePath = 'lib/images/question-mark.png';
 
   @override
@@ -38,8 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _username = TextEditingController();
     _password = TextEditingController();
+    loadLogin();
+
   }
 
+  @override
   void dispose() {
     _username.dispose();
     _password.dispose();
@@ -50,6 +55,38 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
     });
+
+    if (loginIsSet) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Login information saved!"),
+          action: SnackBarAction(
+            label: "Undo",
+            onPressed: () {
+              _username.clear();
+              _password.clear();
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  void loadLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _username.text = prefs.getString('username') ?? '';
+      _password.text = prefs.getString('password') ?? '';
+      if(prefs.getString('username') == null && prefs.getString('password') == null) {
+        loginIsSet = false;
+      }
+    });
+  }
+
+  void saveLogin(String u, String p) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', u);
+    await prefs.setString('password', p);
   }
 
   @override
@@ -86,7 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                saveLogin(_username.text, _password.text);
                                 Navigator.of(context).pop();
                               },
                               child: Text("Yes", style: TextStyle(fontSize: 40))),
