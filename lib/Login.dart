@@ -74,10 +74,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: "Password",
               ),
             ),
-            ElevatedButton(onPressed: () {
-              attemptLogin(_username.text,_password.text);
-            }
-            , child: const Text('Login'),
+            ElevatedButton(
+              onPressed: () {
+                attemptLogin(_username.text,_password.text);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text("Do you want to save your login information?"),
+                    actions: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Yes", style: TextStyle(fontSize: 40))),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("No", style: TextStyle(fontSize: 40))),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Login'),
             ),
             Image.asset(
               _imagePath,
