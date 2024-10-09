@@ -1,3 +1,4 @@
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _username = TextEditingController();
     _password = TextEditingController();
     loadLogin();
-
+    loginIsSet = _username.text == '' && _password.text == '' ? false : true;
+    if(loginIsSet) alertSavedLogin();
   }
 
   @override
@@ -55,36 +57,26 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
     });
-
-    if (loginIsSet) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Login information saved!"),
-          action: SnackBarAction(
-            label: "Undo",
-            onPressed: () {
-              _username.clear();
-              _password.clear();
-            },
-          ),
-        ),
-      );
-    }
   }
 
-  void loadLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _username.text = prefs.getString('username') ?? '';
-      _password.text = prefs.getString('password') ?? '';
-      if(prefs.getString('username') == null && prefs.getString('password') == null) {
-        loginIsSet = false;
-      }
+  Future<void> alertSavedLogin() async {
+    /*
+     * Put a snackbar here
+     */
+  }
+
+  Future<void> loadLogin() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    prefs.getString('username').then((String value) {
+      _username.text = value ?? '';
+    });
+    prefs.getString('password').then((String value){
+      _password.text = value ?? '';
     });
   }
 
-  void saveLogin(String u, String p) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> saveLogin(String u, String p) async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     await prefs.setString('username', u);
     await prefs.setString('password', p);
   }
