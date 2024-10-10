@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _username;
   late TextEditingController _password;
-  bool loginIsSet = true;
+  bool loginIsSet = false;
   var _imagePath = 'lib/images/question-mark.png';
 
   @override
@@ -42,8 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _username = TextEditingController();
     _password = TextEditingController();
     loadLogin();
-    loginIsSet = _username.text == '' && _password.text == '' ? false : true;
-    if(loginIsSet) alertSavedLogin();
   }
 
   @override
@@ -60,19 +58,51 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> alertSavedLogin() async {
-    /*
-     * Put a snackbar here
-     */
+    final snackBar = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text("Automatically filled in your login credentials"),
+          ),
+          TextButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+            child: Text("Keep", style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: "Undo",
+        onPressed: () {
+          setState(() {
+            _username.clear();
+            _password.clear();
+          });
+        },
+      ),
+      duration: const Duration(days: 1),
+    );
+    Future.delayed(Duration.zero, () {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   Future<void> loadLogin() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
-    prefs.getString('username').then((String value) {
-      _username.text = value ?? '';
+    String? savedUsername = await prefs.getString('username');
+    String? savedPassword = await prefs.getString('password');
+
+    setState(() {
+      _username.text = savedUsername ?? '';
+      _password.text = savedPassword ?? '';
+      loginIsSet = _username.text.isNotEmpty && _password.text.isNotEmpty;
     });
-    prefs.getString('password').then((String value){
-      _password.text = value ?? '';
-    });
+
+    if (loginIsSet) {
+      alertSavedLogin();
+    }
   }
 
   Future<void> saveLogin(String u, String p) async {
