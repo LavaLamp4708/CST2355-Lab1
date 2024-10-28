@@ -111,6 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
     await prefs.setString('password', p);
   }
 
+  Future<void> clearLogin() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    await prefs.remove('username');
+    await prefs.remove('password');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: Text("Yes", style: TextStyle(fontSize: 40))),
                           ElevatedButton(
                               onPressed: () {
+                                clearLogin();
                                 Navigator.of(context).pop();
                               },
                               child: Text("No", style: TextStyle(fontSize: 40))),
