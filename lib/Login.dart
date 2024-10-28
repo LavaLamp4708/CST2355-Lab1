@@ -1,6 +1,8 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Profile_Page.dart';
+import 'DataRepository.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +20,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        '/profilePage': (context) => const ProfilePage(title: 'Profile Page'),
+      },
     );
   }
 }
@@ -53,7 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void attemptLogin(String username, String password) {
     setState(() {
-      _imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
+      //_imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
+      if(username == "QWERTY123"){
+        _imagePath = 'lib/images/idea.png';
+        Navigator.pushNamed(context, "/profilePage");
+      }
+      else {
+        _imagePath = 'lib/images/stop.png';
+      }
     });
   }
 
