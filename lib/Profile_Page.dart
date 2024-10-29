@@ -17,6 +17,8 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _emailAddress;
   late String _usrName;
 
+  static const IconData phone = IconData(0xe4a2, fontFamily: 'MaterialIcons');
+
   Future<void> _getUsrName() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     String? usrName = await prefs.getString('username') ?? '';
@@ -24,6 +26,10 @@ class _ProfilePageState extends State<ProfilePage> {
     setState((){
       _usrName = usrName;
     });
+  }
+
+  void _call(){
+
   }
 
   @override
@@ -56,7 +62,44 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(''),
+          TextField(
+            controller: _firstName,
+            decoration: InputDecoration(
+              hintText: "First Name",
+              border: OutlineInputBorder(),
+              labelText: "FirstName",
+            ),
+          ),
+          TextField(
+            controller: _lastName,
+            decoration: InputDecoration(
+              hintText: "Last Name",
+              border: OutlineInputBorder(),
+              labelText: "Last Name",
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget> [
+              Flexible(
+                child: TextField(
+                  controller: _phoneNumber,
+                  decoration: InputDecoration(
+                    hintText: "Phone Number",
+                    border: OutlineInputBorder(),
+                    labelText: "Phone Number",
+                  ),
+                )
+              ),
+              IconButton(
+                  icon: Container(
+                    child: IconData()
+                  ), 
+                  onPressed: _call();
+              ),
+            ]
+          )
+
         ]
       )
     )

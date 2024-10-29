@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _username;
   late TextEditingController _password;
   bool loginIsSet = false;
+  bool _correctPwd = false;
   var _imagePath = 'lib/images/question-mark.png';
 
   @override
@@ -58,14 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void attemptLogin(String username, String password) {
     setState(() {
-      //_imagePath = username == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
-      if(username == "QWERTY123"){
-        _imagePath = 'lib/images/idea.png';
-        Navigator.pushNamed(context, "/profilePage");
-      }
-      else {
-        _imagePath = 'lib/images/stop.png';
-      }
+      _imagePath = password == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
+      _correctPwd = password == "QWERTY123";
     });
   }
 
@@ -123,6 +118,57 @@ class _MyHomePageState extends State<MyHomePage> {
     await prefs.setString('password', p);
   }
 
+  void _showCorrectPwdDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Do you want to save your login information?"),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                  onPressed: () async {
+                    saveLogin(_username.text, _password.text);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(context, '/profilePage');
+                  },
+                  child: Text("Yes", style: TextStyle(fontSize: 40))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(context, '/profilePage');
+                  },
+                  child: Text("No", style: TextStyle(fontSize: 40))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showIncorrectPwdDialog(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Incorrect password'),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Continue", style: TextStyle(fontSize: 40))
+              )
+            ],
+          )
+        ],
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,30 +194,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 attemptLogin(_username.text,_password.text);
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text("Do you want to save your login information?"),
-                    actions: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                saveLogin(_username.text, _password.text);
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("Yes", style: TextStyle(fontSize: 40))),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("No", style: TextStyle(fontSize: 40))),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
+                if (_correctPwd) {
+                  _showCorrectPwdDialog();
+                } else {
+                  _showIncorrectPwdDialog();
+                }
               },
               child: const Text('Login'),
             ),
