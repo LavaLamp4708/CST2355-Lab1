@@ -54,11 +54,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     _username.dispose();
     _password.dispose();
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     super.dispose();
   }
 
   void attemptLogin(String username, String password) {
     setState(() {
+      DataRepository.username = _username.text;
       _imagePath = password == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
       _correctPwd = password == "QWERTY123";
     });
@@ -133,13 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.of(context).pop();
                     Navigator.pushNamed(context, '/profilePage');
                   },
-                  child: Text("Yes", style: TextStyle(fontSize: 40))),
+                  child: const Text("Yes", style: TextStyle(fontSize: 40))),
               ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.pushNamed(context, '/profilePage');
                   },
-                  child: Text("No", style: TextStyle(fontSize: 40))),
+                  child: const Text("No", style: TextStyle(fontSize: 40))),
             ],
           ),
         ],
@@ -151,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('Incorrect password'),
+        title: const Text('Incorrect password'),
         actions: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -160,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("Continue", style: TextStyle(fontSize: 40))
+                child: const Text("Continue", style: TextStyle(fontSize: 40))
               )
             ],
           )
@@ -177,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(controller: _username,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Username",
                 border: OutlineInputBorder(),
                 labelText: "Username",
@@ -185,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextField(controller: _password,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Password",
                 border: OutlineInputBorder(),
                 labelText: "Password",

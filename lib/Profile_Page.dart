@@ -1,5 +1,6 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'DataRepository.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -28,8 +29,79 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void _call(){
+  void _alertBadUrl(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(message),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                child: Text("Continue", style: TextStyle(fontSize: 40)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ]
+          )
+        ]
+      )
+    );
+  }
 
+  void _call() async{
+    final String tel = _phoneNumber.text;
+    final Uri phoneUri = Uri(scheme: 'tel', path: tel);
+
+    if (await canLaunchUrl(phoneUri)){
+      await launchUrl(phoneUri);
+    } else {
+      _alertBadUrl("Unable to make phone call.");
+    }
+  }
+
+  void _text() async {
+    final String tel = _phoneNumber.text;
+    final Uri phoneUri = Uri(scheme: 'sms', path: tel);
+
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      _alertBadUrl("Unable to send SMS message.");
+    }
+  }
+
+  void _email() async {
+    final String email = _emailAddress.text;
+    final Uri emailUri = Uri(scheme: 'mailto', path: email);
+
+    if (await canLaunchUrl(emailUri)){
+      await launchUrl(emailUri);
+    } else {
+      _alertBadUrl("Unable to send email.");
+    }
+  }
+
+  void _onFNameChanged(String str){
+    DataRepository.fName = str;
+    DataRepository.saveData();
+  }
+
+  void _onLNameChanged(String str){
+    DataRepository.lName = str;
+    DataRepository.saveData();
+  }
+
+  void _onPhoneChanged(String str){
+    DataRepository.phone = str;
+    DataRepository.saveData();
+  }
+
+  void _onEmailChanged(String str){
+    DataRepository.email = str;
+    DataRepository.saveData();
   }
 
   @override
@@ -64,18 +136,20 @@ class _ProfilePageState extends State<ProfilePage> {
         children: <Widget>[
           TextField(
             controller: _firstName,
-            decoration: InputDecoration(
+            onChanged: _onFNameChanged,
+            decoration: const InputDecoration(
               hintText: "First Name",
               border: OutlineInputBorder(),
-              labelText: "FirstName",
+              labelText: "First Name:",
             ),
           ),
           TextField(
             controller: _lastName,
-            decoration: InputDecoration(
+            onChanged: _onLNameChanged,
+            decoration: const InputDecoration(
               hintText: "Last Name",
               border: OutlineInputBorder(),
-              labelText: "Last Name",
+              labelText: "Last Name:",
             ),
           ),
           Row(
@@ -84,24 +158,53 @@ class _ProfilePageState extends State<ProfilePage> {
               Flexible(
                 child: TextField(
                   controller: _phoneNumber,
-                  decoration: InputDecoration(
+                  onChanged: _onPhoneChanged,
+                  decoration: const InputDecoration(
                     hintText: "Phone Number",
                     border: OutlineInputBorder(),
-                    labelText: "Phone Number",
+                    labelText: "Phone Number:",
                   ),
                 )
               ),
               IconButton(
                   icon: Container(
-                    child: IconData()
+                    child: Icon(Icons.phone)
                   ), 
-                  onPressed: _call();
+                  onPressed: _call
               ),
+              IconButton(
+                icon: Container(
+                  child: Icon(Icons.sms)
+                ),
+                onPressed: _text,
+              )
+            ]
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget> [
+              Flexible(
+                child: TextField(
+                  controller: _emailAddress,
+                  onChanged: _onEmailChanged,
+                  decoration: const InputDecoration(
+                    hintText: 'Email Address: (JohnDoe@example.com)',
+                    border: OutlineInputBorder(),
+                    labelText: "Email Address:"
+                  )
+                )
+              ),
+              IconButton(
+                icon: Container(
+                  child: Icon(Icons.email)
+                ),
+                onPressed: _email
+              )
             ]
           )
 
         ]
       )
-    )
+    );
   }
 }

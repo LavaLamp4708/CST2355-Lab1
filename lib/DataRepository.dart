@@ -5,6 +5,7 @@ class DataRepository {
   static late String lName;
   static late String phone;
   static late String email;
+  static late String username;
 
   static Future<void> loadData() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
