@@ -30,47 +30,41 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _counter = 0.0;
-  var myFontSize = 30.0;
-
-  void setNewValue(var value)
-  {
-    setState(() {
-      _counter=value;
-      myFontSize=value;
-    });
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
-  void _incrementCounter() {
-    setState(() {
-      if(_counter < 99.0) {
-        _counter++;
-        myFontSize++;
-      }
-    });
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('You have pushed the button this many times:', style:TextStyle(fontSize:myFontSize)),
-            Text('$_counter',style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize:myFontSize)),
-            Slider(value:_counter, max:100.0, onChanged: setNewValue, min:0.0 )
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child:
+            ListView.builder(
+              itemBuilder: (context, rowNum) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    
+                  ],
+                )
+              }
+            ),
+          )
+        ],
       ),
     );
   }
