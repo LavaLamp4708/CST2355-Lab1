@@ -31,19 +31,62 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
+  List<String> _toDoList = [];
+  late TextEditingController _toDoListTextController;
+
   @override
   void initState() {
-    // TODO: implement initState
+    _toDoListTextController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _toDoListTextController.dispose();
     super.dispose();
   }
 
+  Future<void> _addToList() async {
+    setState(() {
+      _toDoList.add(_toDoListTextController.text);
+      _toDoListTextController.clear();
+    });
+  }
 
+  Future<void> _deleteFromList(int itemNumber) async {
+    setState(() {
+      _toDoList.removeAt(itemNumber);
+    });
+  }
+
+  void _alertConfirmItemDeletion(int itemNumber){
+    showDialog(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        title: Text("Delete item $itemNumber?"),
+        content: Text('"${_toDoList[itemNumber]}"', style: TextStyle(fontSize: 20),),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _deleteFromList(itemNumber);
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Yes", style: TextStyle(fontSize: 36)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }, 
+                child: const Text("No", style: TextStyle(fontSize: 36))
+              ),
+            ],
+          )
+        ]
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +95,45 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
+            child: Row(
+              children: [
+                const SizedBox(width: 15,),
+                ElevatedButton(onPressed: _addToList, child: const Text("Add", style: TextStyle(fontSize: 28),)),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: TextField(
+                    controller: _toDoListTextController,
+                    decoration: const InputDecoration(
+                      hintText: "Todo list item",
+                      border: OutlineInputBorder()
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15)
+              ],
+            )
+          ),
+          Expanded(
             child:
             ListView.builder(
+              itemCount: _toDoList.length,
               itemBuilder: (context, rowNum) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    
-                  ],
-                )
+                return GestureDetector(
+                  onLongPress: () {
+                    _alertConfirmItemDeletion(rowNum);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 15,),
+                      Text("Item $rowNum:", style: const TextStyle(fontSize: 20)),
+                      const SizedBox(width: 20,),
+                      Expanded(child: Text(_toDoList[rowNum], style: const TextStyle(fontSize: 20))),
+                      const SizedBox(width: 15)
+                    ],
+                  ),
+                );
+                
               }
             ),
           )
