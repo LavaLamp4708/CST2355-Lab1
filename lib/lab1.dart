@@ -59,6 +59,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Widget _ifEmpty(){
+    if(_toDoList.isEmpty){
+      return const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [Text("The list is empty...", style: TextStyle(fontSize: 20),)]
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
   void _alertConfirmItemDeletion(int itemNumber){
     showDialog(context: context, builder: (BuildContext context){
       return AlertDialog(
@@ -113,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             )
           ),
+          _ifEmpty(),
           Expanded(
             child:
             ListView.builder(
@@ -126,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const SizedBox(width: 15,),
-                      Text("Item $rowNum:", style: const TextStyle(fontSize: 20)),
+                      Text("Item ${rowNum + 1}:", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(width: 20,),
                       Expanded(child: Text(_toDoList[rowNum], style: const TextStyle(fontSize: 20))),
                       const SizedBox(width: 15)
