@@ -20,12 +20,27 @@ class _ProfilePageState extends State<ProfilePage> {
 
   static const IconData phone = IconData(0xe4a2, fontFamily: 'MaterialIcons');
 
-  Future<void> _getUsrName() async {
+  /*Future<void> _getUsrName() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
-    String? usrName = await prefs.getString('username') ?? '';
+    String? usrName = await prefs.getString('username') ?? "";
 
     setState((){
-      _usrName = usrName;
+      _usrName = usrName != "" ? usrName : DataRepository.username;
+    });
+  }*/
+
+  Future<void> _getSharedPreferences() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    String? fName = await prefs.getString('fName') ?? '';
+    String? lName = await prefs.getString('lName') ?? '';
+    String? phone = await prefs.getString('phone') ?? '';
+    String? email = await prefs.getString('email') ?? '';
+
+    setState((){
+      _firstName.text = fName;
+      _lastName.text = lName;
+      _phoneNumber.text = phone;
+      _emailAddress.text = email;
     });
   }
 
@@ -112,7 +127,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _phoneNumber = TextEditingController();
     _emailAddress = TextEditingController();
     DataRepository.loadData();
-    _getUsrName();
+    //_getUsrName();
+    _usrName = DataRepository.username;
+    _getSharedPreferences();
   }
 
   @override

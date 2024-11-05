@@ -60,9 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void attemptLogin(String username, String password) {
     setState(() {
-      DataRepository.username = _username.text;
-      _imagePath = password == "QWERTY123" ? 'lib/images/idea.png' : 'lib/images/stop.png';
       _correctPwd = password == "QWERTY123";
+      DataRepository.username = _correctPwd ? _username.text : "";
+      _imagePath = _correctPwd ? 'lib/images/idea.png' : 'lib/images/stop.png';
     });
   }
 
@@ -71,14 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
+          const Expanded(
             child: Text("Automatically filled in your login credentials"),
           ),
           TextButton(
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
             },
-            child: Text("Keep", style: TextStyle(color: Colors.blue)),
+            child: const Text("Keep", style: TextStyle(color: Colors.blue)),
           ),
         ],
       ),

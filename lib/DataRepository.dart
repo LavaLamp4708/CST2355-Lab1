@@ -1,10 +1,10 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 class DataRepository {
-  static late String fName;
-  static late String lName;
-  static late String phone;
-  static late String email;
+  static String fName = "";
+  static String lName = "";
+  static String phone = "";
+  static String email = "";
   static late String username;
 
   static Future<void> loadData() async {
