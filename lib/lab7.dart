@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_labs/database.dart';
+import 'package:my_flutter_labs/todo_dao.dart';
+
+import 'todo_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,13 +35,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
-  List<String> _toDoList = [];
+  List<ToDoItem> _toDoList = [];
   late TextEditingController _toDoListTextController;
+  late final ToDoDAO myDAO;
 
   @override
   void initState() {
-    _toDoListTextController = TextEditingController();
     super.initState();
+    _toDoListTextController = TextEditingController();
+    _initializeDB();
   }
 
   @override
@@ -46,15 +52,35 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  Future<void> _initializeDB() async {
+    $FloorAppDatabase
+      .databaseBuilder('todo_list_databse.db')
+      .build()
+      .then((database){
+        myDAO = database.toDoDAO;
+        myDAO.findAllItems().then((listOfItems){
+          setState (() {
+            _toDoList.clear();
+            _toDoList.addAll(listOfItems);
+          });
+        });
+      });
+  }
+
   Future<void> _addToList() async {
-    setState(() {
-      _toDoList.add(_toDoListTextController.text);
-      _toDoListTextController.clear();
-    });
+    if (_toDoListTextController.value.text.isNotEmpty) {
+      setState(() {
+        var newItem = ToDoItem(ToDoItem.ID++, _toDoListTextController.value.text);
+        myDAO.insertItem(newItem);
+        _toDoList.add(newItem);
+        _toDoListTextController.text = "";
+      });
+    }
   }
 
   Future<void> _deleteFromList(int itemNumber) async {
     setState(() {
+      myDAO.deleteItem(_toDoList[itemNumber]);
       _toDoList.removeAt(itemNumber);
     });
   }
@@ -73,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(context: context, builder: (BuildContext context){
       return AlertDialog(
         title: Text("Delete item $itemNumber?"),
-        content: Text('"${_toDoList[itemNumber]}"', style: TextStyle(fontSize: 20),),
+        content: Text('"${ _toDoList[itemNumber].toDoItem}"', style: TextStyle(fontSize: 20),),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -117,6 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       hintText: "Todo list item",
                       border: OutlineInputBorder()
                     ),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _addToList(),
                   ),
                 ),
                 const SizedBox(width: 15)
@@ -139,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       const SizedBox(width: 15,),
                       Text("Item ${rowNum + 1}:", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(width: 20,),
-                      Expanded(child: Text(_toDoList[rowNum], style: const TextStyle(fontSize: 20))),
+                      Expanded(child: Text(_toDoList[rowNum].toDoItem, style: const TextStyle(fontSize: 20))),
                       const SizedBox(width: 15)
                     ],
                   ),
